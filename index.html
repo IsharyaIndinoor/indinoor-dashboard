@@ -1,445 +1,195 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Indinoor — Live Funnel Report</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Indinoor — Hourly Funnel Report · 25 Mar 2026, 15:09 IST</title>
 <style>
-  :root {
-    --navy: #1a1a2e; --navy2: #16213e; --gold: #e8c97a; --green: #1a7a4a;
-    --red: #c0392b; --light: #f5f5f5; --mid: #e0e0e0; --grey: #888;
-    --text: #1a1a2e; --white: #ffffff;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f0f2f7; color: var(--text); }
-
-  /* ── Header ── */
-  .header {
-    background: linear-gradient(135deg, var(--navy), var(--navy2));
-    color: white; padding: 20px 32px; display: flex;
-    align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-    position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,.3);
-  }
-  .header-left h1 { font-size: 1.35rem; font-weight: 700; letter-spacing: -.3px; }
-  .header-left h1 span { color: var(--gold); }
-  .header-left p { font-size: .8rem; color: #aaa; margin-top: 2px; }
-  .header-right { text-align: right; }
-  .badge { display: inline-block; background: var(--gold); color: var(--navy);
-            font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-            letter-spacing: .5px; text-transform: uppercase; }
-  .countdown { font-size: .75rem; color: #aaa; margin-top: 5px; }
-  .countdown span { color: var(--gold); font-weight: 600; }
-
-  /* ── Layout ── */
-  .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
-  .section-title {
-    font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-    color: var(--navy); border-left: 3px solid var(--gold); padding-left: 10px;
-    margin: 28px 0 14px;
-  }
-
-  /* ── KPI Cards ── */
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
-  .kpi-card {
-    background: white; border-radius: 10px; padding: 18px 20px;
-    box-shadow: 0 1px 4px rgba(0,0,0,.08); border-top: 3px solid var(--navy);
-    transition: transform .15s; cursor: default;
-  }
-  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,.12); }
-  .kpi-card.gold { border-top-color: var(--gold); }
-  .kpi-card.green { border-top-color: var(--green); }
-  .kpi-label { font-size: .7rem; font-weight: 600; text-transform: uppercase;
-               letter-spacing: .8px; color: var(--grey); }
-  .kpi-value { font-size: 1.8rem; font-weight: 700; color: var(--navy);
-               margin: 6px 0 2px; line-height: 1; }
-  .kpi-sub { font-size: .72rem; color: var(--grey); }
-
-  /* ── Funnel bars ── */
-  .funnel-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
-  .funnel-card { background: white; border-radius: 10px; padding: 16px 20px;
-                  box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-  .funnel-label { font-size: .72rem; color: var(--grey); font-weight: 600;
-                   text-transform: uppercase; letter-spacing: .7px; margin-bottom: 8px; }
-  .funnel-rate { font-size: 1.5rem; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
-  .funnel-bar-bg { height: 6px; background: var(--light); border-radius: 3px; overflow: hidden; }
-  .funnel-bar { height: 6px; background: var(--gold); border-radius: 3px; transition: width .6s ease; }
-
-  /* ── Charts ── */
-  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media(max-width: 760px) { .chart-grid { grid-template-columns: 1fr; } }
-  .chart-card { background: white; border-radius: 10px; padding: 18px 20px;
-                  box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-  .chart-title { font-size: .75rem; font-weight: 700; text-transform: uppercase;
-                  letter-spacing: .7px; color: var(--grey); margin-bottom: 12px; }
-  .chart-wrap { position: relative; height: 200px; }
-
-  /* ── Tables ── */
-  .table-wrap { overflow-x: auto; background: white; border-radius: 10px;
-                  box-shadow: 0 1px 4px rgba(0,0,0,.08); }
-  table { width: 100%; border-collapse: collapse; font-size: .78rem; }
-  th { background: var(--navy); color: white; font-weight: 600; padding: 9px 10px;
-         text-align: center; white-space: nowrap; font-size: .72rem;
-         text-transform: uppercase; letter-spacing: .5px; }
-  th.group { background: var(--navy2); border-left: 2px solid var(--gold); }
-  td { padding: 7px 10px; text-align: center; white-space: nowrap; border-bottom: 1px solid #eee; }
-  tr:last-child td { border-bottom: none; }
-  tr.alt td { background: #fafafa; }
-  tr:hover td { background: #f0f4ff; }
-  td:first-child { font-weight: 600; color: var(--navy); text-align: left; padding-left: 14px; }
-  .pos { color: var(--green); font-weight: 700; }
-  .neg { color: var(--red); font-weight: 700; }
-  .neutral { color: var(--grey); }
-  .divider-col { border-left: 2px solid var(--gold); }
-
-  /* ── Footer ── */
-  .footer { text-align: center; color: var(--grey); font-size: .7rem;
-              padding: 24px 20px 32px; font-style: italic; }
+  :root{--gold:#c9a84c;--dark:#1a1209;--mid:#2e2008;--light:#f5f0e8;--pos:#2d7a3a;--neg:#c0392b;--neu:#666;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--dark);color:var(--light);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;}
+  header{background:var(--mid);border-bottom:2px solid var(--gold);padding:18px 28px;display:flex;align-items:center;gap:16px;}
+  header h1{font-size:1.4rem;color:var(--gold);letter-spacing:.5px;}
+  header .ts{margin-left:auto;font-size:.8rem;opacity:.7;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;padding:22px 28px;}
+  .kpi{background:var(--mid);border:1px solid #3d2e10;border-radius:8px;padding:16px 18px;}
+  .kpi .label{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:6px;}
+  .kpi .value{font-size:1.6rem;font-weight:700;}
+  .kpi .sub{font-size:.75rem;opacity:.6;margin-top:4px;}
+  .section{padding:0 28px 28px;}
+  .section h2{font-size:.9rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--gold);margin-bottom:12px;border-left:3px solid var(--gold);padding-left:10px;}
+  .rates{display:flex;gap:14px;margin-bottom:28px;flex-wrap:wrap;}
+  .rate-card{background:var(--mid);border:1px solid #3d2e10;border-radius:8px;padding:14px 20px;flex:1;min-width:160px;text-align:center;}
+  .rate-card .rlabel{font-size:.7rem;text-transform:uppercase;letter-spacing:.8px;color:var(--gold);margin-bottom:4px;}
+  .rate-card .rval{font-size:1.4rem;font-weight:700;}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  th{background:#2e2008;color:var(--gold);padding:8px 10px;text-align:right;font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+  th:first-child{text-align:center;}
+  td{padding:7px 10px;text-align:right;border-bottom:1px solid #2a1e08;}
+  td:first-child{text-align:center;font-weight:600;color:var(--gold);}
+  tr:hover td{background:#261c06;}
+  .delta.pos{color:#4caf6a;font-weight:600;}
+  .delta.neg{color:#e05b4b;font-weight:600;}
+  .delta.neutral{color:var(--neu);}
+  .tbl-wrap{overflow-x:auto;border-radius:8px;border:1px solid #3d2e10;}
+  .mb{margin-bottom:24px;}
+  footer{text-align:center;padding:18px;font-size:.75rem;opacity:.4;border-top:1px solid #2e2008;}
+  .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:700;margin-left:6px;}
+  .badge.pos{background:#1a3d22;color:#4caf6a;}
+  .badge.neg{background:#3d1a18;color:#e05b4b;}
 </style>
 </head>
 <body>
+<header>
+  <div>
+    <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--gold);opacity:.7;">Indinoor Jewellery</div>
+    <h1>Hourly Funnel Report</h1>
+  </div>
+  <div class="ts">Generated: 25 Mar 2026, 15:09 IST &nbsp;·&nbsp; Data through 09:59 today</div>
+</header>
 
-<!-- ── Header ─────────────────────────────────────────────────────── -->
-<div class="header">
-  <div class="header-left">
-    <h1>Indinoor <span>Jewellery</span> — Live Funnel Report</h1>
-    <p>Wednesday, 25 March 2026 &nbsp;·&nbsp; Generated at 14:40 IST &nbsp;·&nbsp; Latest GA4 hour: 09:00</p>
-  </div>
-  <div class="header-right">
-    <div class="badge">🟢 Live</div>
-    <div class="countdown">Next refresh in <span id="cd">—</span></div>
-  </div>
+<div class="grid">
+  <div class="kpi"><div class="label">Sessions (Today)</div><div class="value">628</div><div class="sub">Yesterday full day: 3,522</div></div>
+  <div class="kpi"><div class="label">Add to Carts</div><div class="value">85</div><div class="sub">Yesterday full day: 415</div></div>
+  <div class="kpi"><div class="label">Checkouts</div><div class="value">21</div><div class="sub">Yesterday full day: 75</div></div>
+  <div class="kpi"><div class="label">Orders (Shopify)</div><div class="value">8</div><div class="sub">Yesterday full day: 24</div></div>
+  <div class="kpi"><div class="label">Revenue (Shopify)</div><div class="value">₹43,521</div><div class="sub">Yesterday full day: ₹87,027</div></div>
 </div>
 
-<div class="container">
-
-  <!-- ── KPI Cards ──────────────────────────────────────────────── -->
-  <div class="section-title">Today's Performance (00:00 – 09:00)</div>
-  <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">Sessions</div>
-      <div class="kpi-value">628</div>
-      <div class="kpi-sub">Unique visits today</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Add to Carts</div>
-      <div class="kpi-value">85</div>
-      <div class="kpi-sub">ATC rate: 13.5%</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Checkouts</div>
-      <div class="kpi-value">21</div>
-      <div class="kpi-sub">Checkout rate: 24.7%</div>
-    </div>
-    <div class="kpi-card gold">
-      <div class="kpi-label">Orders (Shopify)</div>
-      <div class="kpi-value">8</div>
-      <div class="kpi-sub">Conv. rate: 1.3%</div>
-    </div>
-    <div class="kpi-card green">
-      <div class="kpi-label">Revenue (Shopify)</div>
-      <div class="kpi-value" style="font-size:1.45rem">₹43,521</div>
-      <div class="kpi-sub">Avg. order: ₹5,440</div>
-    </div>
+<div class="section">
+  <h2>Conversion Funnel Rates — Today</h2>
+  <div class="rates">
+    <div class="rate-card"><div class="rlabel">Session → ATC</div><div class="rval">13.5%</div></div>
+    <div class="rate-card"><div class="rlabel">ATC → Checkout</div><div class="rval">24.7%</div></div>
+    <div class="rate-card"><div class="rlabel">Session → Order</div><div class="rval">1.3%</div></div>
   </div>
 
-  <!-- ── Funnel ─────────────────────────────────────────────────── -->
-  <div class="section-title">Funnel Conversion Rates</div>
-  <div class="funnel-grid">
-    <div class="funnel-card">
-      <div class="funnel-label">Session → Add to Cart</div>
-      <div class="funnel-rate">13.5%</div>
-      <div class="funnel-bar-bg"><div class="funnel-bar" style="width:13.5%"></div></div>
-    </div>
-    <div class="funnel-card">
-      <div class="funnel-label">Add to Cart → Checkout</div>
-      <div class="funnel-rate">24.7%</div>
-      <div class="funnel-bar-bg"><div class="funnel-bar" style="width:24.7%"></div></div>
-    </div>
-    <div class="funnel-card">
-      <div class="funnel-label">Session → Order</div>
-      <div class="funnel-rate">1.3%</div>
-      <div class="funnel-bar-bg"><div class="funnel-bar" style="width:1.3%"></div></div>
-    </div>
-  </div>
-
-  <!-- ── Charts ─────────────────────────────────────────────────── -->
-  <div class="section-title">Hourly Trends — Today vs Yesterday</div>
-  <div class="chart-grid">
-    <div class="chart-card">
-      <div class="chart-title">Sessions by Hour</div>
-      <div class="chart-wrap"><canvas id="sessChart"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Revenue by Hour (GA4)</div>
-      <div class="chart-wrap"><canvas id="revChart"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ── Hourly Breakdown ───────────────────────────────────────── -->
-  <div class="section-title">Hourly Breakdown — Individual Hours</div>
-  <div class="table-wrap">
+  <h2 class="mb" style="margin-bottom:12px;">Hourly Breakdown — Today (00:00 → 09:00)</h2>
+  <div class="tbl-wrap mb">
     <table>
-      <thead>
-        <tr>
-          <th style="text-align:left">Hour</th>
-          <th>Sessions</th><th>Add to Cart</th><th>Checkout</th>
-          <th>Orders (GA4)</th><th>Revenue (GA4)</th>
-          <th>ATC %</th><th>Checkout %</th><th>Order %</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="">
-          <td><strong>00:00</strong></td>
-          <td>135</td><td>18</td><td>9</td>
-          <td>3</td><td>₹6,745</td>
-          <td>13.3%</td><td>50.0%</td><td>2.2%</td>
-        </tr>
-        <tr class="alt">
-          <td><strong>01:00</strong></td>
-          <td>70</td><td>6</td><td>2</td>
-          <td>1</td><td>₹2,695</td>
-          <td>8.6%</td><td>33.3%</td><td>1.4%</td>
-        </tr>
-        <tr class="">
-          <td><strong>02:00</strong></td>
-          <td>43</td><td>8</td><td>1</td>
-          <td>1</td><td>₹2,450</td>
-          <td>18.6%</td><td>12.5%</td><td>2.3%</td>
-        </tr>
-        <tr class="alt">
-          <td><strong>03:00</strong></td>
-          <td>20</td><td>4</td><td>0</td>
-          <td>0</td><td>₹0</td>
-          <td>20.0%</td><td>0.0%</td><td>0.0%</td>
-        </tr>
-        <tr class="">
-          <td><strong>04:00</strong></td>
-          <td>19</td><td>0</td><td>0</td>
-          <td>0</td><td>₹0</td>
-          <td>0.0%</td><td>—</td><td>0.0%</td>
-        </tr>
-        <tr class="alt">
-          <td><strong>05:00</strong></td>
-          <td>25</td><td>1</td><td>0</td>
-          <td>0</td><td>₹0</td>
-          <td>4.0%</td><td>0.0%</td><td>0.0%</td>
-        </tr>
-        <tr class="">
-          <td><strong>06:00</strong></td>
-          <td>30</td><td>6</td><td>1</td>
-          <td>1</td><td>₹7,570</td>
-          <td>20.0%</td><td>16.7%</td><td>3.3%</td>
-        </tr>
-        <tr class="alt">
-          <td><strong>07:00</strong></td>
-          <td>90</td><td>24</td><td>6</td>
-          <td>3</td><td>₹26,338</td>
-          <td>26.7%</td><td>25.0%</td><td>3.3%</td>
-        </tr>
-        <tr class="">
-          <td><strong>08:00</strong></td>
-          <td>150</td><td>14</td><td>2</td>
-          <td>1</td><td>₹1,115</td>
-          <td>9.3%</td><td>14.3%</td><td>0.7%</td>
-        </tr>
-        <tr class="alt">
-          <td><strong>09:00</strong></td>
-          <td>46</td><td>4</td><td>0</td>
-          <td>0</td><td>₹0</td>
-          <td>8.7%</td><td>0.0%</td><td>0.0%</td>
-        </tr></tbody>
+      <thead><tr>
+        <th>Hour</th><th>Sessions</th><th>Add to Cart</th><th>Checkouts</th><th>Orders (GA4)</th><th>Revenue (GA4)</th>
+      </tr></thead>
+      <tbody><tr>
+      <td>00:00</td><td>135</td><td>18</td>
+      <td>9</td><td>3</td><td>₹6,745</td>
+    </tr><tr>
+      <td>01:00</td><td>70</td><td>6</td>
+      <td>2</td><td>1</td><td>₹2,695</td>
+    </tr><tr>
+      <td>02:00</td><td>43</td><td>8</td>
+      <td>1</td><td>1</td><td>₹2,450</td>
+    </tr><tr>
+      <td>03:00</td><td>20</td><td>4</td>
+      <td>0</td><td>0</td><td>₹0</td>
+    </tr><tr>
+      <td>04:00</td><td>19</td><td>0</td>
+      <td>0</td><td>0</td><td>₹0</td>
+    </tr><tr>
+      <td>05:00</td><td>25</td><td>1</td>
+      <td>0</td><td>0</td><td>₹0</td>
+    </tr><tr>
+      <td>06:00</td><td>30</td><td>6</td>
+      <td>1</td><td>1</td><td>₹7,570</td>
+    </tr><tr>
+      <td>07:00</td><td>90</td><td>24</td>
+      <td>6</td><td>3</td><td>₹26,338</td>
+    </tr><tr>
+      <td>08:00</td><td>150</td><td>14</td>
+      <td>2</td><td>1</td><td>₹1,115</td>
+    </tr><tr>
+      <td>09:00</td><td>46</td><td>4</td>
+      <td>0</td><td>0</td><td>₹0</td>
+    </tr></tbody>
     </table>
   </div>
 
-  <!-- ── Cumulative Table ──────────────────────────────────────── -->
-  <div class="section-title">Cumulative + Day-over-Day Comparison (GA4)</div>
-  <div class="table-wrap">
+  <h2 style="margin-bottom:12px;">Cumulative Day-over-Day — 00:00 → 09:00</h2>
+  <div class="tbl-wrap">
     <table>
-      <thead>
-        <tr>
-          <th rowspan="2" style="text-align:left">Hour</th>
-          <th colspan="3" class="group">Sessions</th>
-          <th colspan="3" class="group">Add to Cart</th>
-          <th colspan="3" class="group">Checkouts</th>
-          <th colspan="3" class="group">Orders (GA4)</th>
-          <th colspan="3" class="group">Revenue (GA4)</th>
-        </tr>
-        <tr>
-          <th>Today</th><th>Yest.</th><th>Δ</th>
-          <th class="divider-col">Today</th><th>Yest.</th><th>Δ</th>
-          <th class="divider-col">Today</th><th>Yest.</th><th>Δ</th>
-          <th class="divider-col">Today</th><th>Yest.</th><th>Δ</th>
-          <th class="divider-col">Today</th><th>Yest.</th><th>Δ</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="">
-          <td><strong>00:00</strong></td>
-          <td>135</td><td>169</td><td><span class="neg">-20.1%</span></td>
-          <td>18</td><td>31</td><td><span class="neg">-41.9%</span></td>
-          <td>9</td><td>3</td><td><span class="pos">+200.0%</span></td>
-          <td>3</td><td>1</td><td><span class="pos">+200.0%</span></td>
-          <td>₹6,745</td><td>₹4,320</td><td><span class="pos">+56.1%</span></td>
-        </tr>
-        <tr class="alt">
-          <td><strong>01:00</strong></td>
-          <td>205</td><td>253</td><td><span class="neg">-19.0%</span></td>
-          <td>24</td><td>47</td><td><span class="neg">-48.9%</span></td>
-          <td>11</td><td>8</td><td><span class="pos">+37.5%</span></td>
-          <td>4</td><td>2</td><td><span class="pos">+100.0%</span></td>
-          <td>₹9,440</td><td>₹5,674</td><td><span class="pos">+66.4%</span></td>
-        </tr>
-        <tr class="">
-          <td><strong>02:00</strong></td>
-          <td>248</td><td>294</td><td><span class="neg">-15.6%</span></td>
-          <td>32</td><td>57</td><td><span class="neg">-43.9%</span></td>
-          <td>12</td><td>10</td><td><span class="pos">+20.0%</span></td>
-          <td>5</td><td>2</td><td><span class="pos">+150.0%</span></td>
-          <td>₹11,890</td><td>₹5,674</td><td><span class="pos">+109.6%</span></td>
-        </tr>
-        <tr class="alt">
-          <td><strong>03:00</strong></td>
-          <td>268</td><td>321</td><td><span class="neg">-16.5%</span></td>
-          <td>36</td><td>58</td><td><span class="neg">-37.9%</span></td>
-          <td>12</td><td>11</td><td><span class="pos">+9.1%</span></td>
-          <td>5</td><td>3</td><td><span class="pos">+66.7%</span></td>
-          <td>₹11,890</td><td>₹22,840</td><td><span class="neg">-47.9%</span></td>
-        </tr>
-        <tr class="">
-          <td><strong>04:00</strong></td>
-          <td>287</td><td>335</td><td><span class="neg">-14.3%</span></td>
-          <td>36</td><td>65</td><td><span class="neg">-44.6%</span></td>
-          <td>12</td><td>11</td><td><span class="pos">+9.1%</span></td>
-          <td>5</td><td>3</td><td><span class="pos">+66.7%</span></td>
-          <td>₹11,890</td><td>₹22,840</td><td><span class="neg">-47.9%</span></td>
-        </tr>
-        <tr class="alt">
-          <td><strong>05:00</strong></td>
-          <td>312</td><td>356</td><td><span class="neg">-12.4%</span></td>
-          <td>37</td><td>66</td><td><span class="neg">-43.9%</span></td>
-          <td>12</td><td>12</td><td><span class="pos">+0.0%</span></td>
-          <td>5</td><td>3</td><td><span class="pos">+66.7%</span></td>
-          <td>₹11,890</td><td>₹22,840</td><td><span class="neg">-47.9%</span></td>
-        </tr>
-        <tr class="">
-          <td><strong>06:00</strong></td>
-          <td>342</td><td>403</td><td><span class="neg">-15.1%</span></td>
-          <td>43</td><td>67</td><td><span class="neg">-35.8%</span></td>
-          <td>13</td><td>12</td><td><span class="pos">+8.3%</span></td>
-          <td>6</td><td>3</td><td><span class="pos">+100.0%</span></td>
-          <td>₹19,460</td><td>₹22,840</td><td><span class="neg">-14.8%</span></td>
-        </tr>
-        <tr class="alt">
-          <td><strong>07:00</strong></td>
-          <td>432</td><td>472</td><td><span class="neg">-8.5%</span></td>
-          <td>67</td><td>85</td><td><span class="neg">-21.2%</span></td>
-          <td>19</td><td>13</td><td><span class="pos">+46.2%</span></td>
-          <td>9</td><td>3</td><td><span class="pos">+200.0%</span></td>
-          <td>₹45,798</td><td>₹22,840</td><td><span class="pos">+100.5%</span></td>
-        </tr>
-        <tr class="">
-          <td><strong>08:00</strong></td>
-          <td>582</td><td>590</td><td><span class="neg">-1.4%</span></td>
-          <td>81</td><td>93</td><td><span class="neg">-12.9%</span></td>
-          <td>21</td><td>13</td><td><span class="pos">+61.5%</span></td>
-          <td>10</td><td>3</td><td><span class="pos">+233.3%</span></td>
-          <td>₹46,913</td><td>₹22,840</td><td><span class="pos">+105.4%</span></td>
-        </tr>
-        <tr class="alt">
-          <td><strong>09:00</strong></td>
-          <td>628</td><td>734</td><td><span class="neg">-14.4%</span></td>
-          <td>85</td><td>118</td><td><span class="neg">-28.0%</span></td>
-          <td>21</td><td>20</td><td><span class="pos">+5.0%</span></td>
-          <td>10</td><td>4</td><td><span class="pos">+150.0%</span></td>
-          <td>₹46,913</td><td>₹24,800</td><td><span class="pos">+89.2%</span></td>
-        </tr></tbody>
+      <thead><tr>
+        <th>Hour</th>
+        <th>Sess T</th><th>Sess Y</th><th>Δ%</th>
+        <th>ATC T</th><th>ATC Y</th><th>Δ%</th>
+        <th>Ckts T</th><th>Ckts Y</th><th>Δ%</th>
+        <th>Ord T</th><th>Ord Y</th><th>Δ%</th>
+        <th>Rev T</th><th>Rev Y</th><th>Δ%</th>
+      </tr></thead>
+      <tbody><tr>
+      <td>00:00</td>
+      <td>135</td><td>169</td><td class="delta neg">−20.1%</td>
+      <td>18</td><td>31</td><td class="delta neg">−41.9%</td>
+      <td>9</td><td>3</td><td class="delta pos">+200.0%</td>
+      <td>3</td><td>1</td><td class="delta pos">+200.0%</td>
+      <td>₹6,745</td><td>₹4,320</td><td class="delta pos">+56.1%</td>
+    </tr><tr>
+      <td>01:00</td>
+      <td>205</td><td>253</td><td class="delta neg">−19.0%</td>
+      <td>24</td><td>47</td><td class="delta neg">−48.9%</td>
+      <td>11</td><td>8</td><td class="delta pos">+37.5%</td>
+      <td>4</td><td>2</td><td class="delta pos">+100.0%</td>
+      <td>₹9,440</td><td>₹5,674</td><td class="delta pos">+66.4%</td>
+    </tr><tr>
+      <td>02:00</td>
+      <td>248</td><td>294</td><td class="delta neg">−15.6%</td>
+      <td>32</td><td>57</td><td class="delta neg">−43.9%</td>
+      <td>12</td><td>10</td><td class="delta pos">+20.0%</td>
+      <td>5</td><td>2</td><td class="delta pos">+150.0%</td>
+      <td>₹11,890</td><td>₹5,674</td><td class="delta pos">+109.6%</td>
+    </tr><tr>
+      <td>03:00</td>
+      <td>268</td><td>321</td><td class="delta neg">−16.5%</td>
+      <td>36</td><td>58</td><td class="delta neg">−37.9%</td>
+      <td>12</td><td>11</td><td class="delta pos">+9.1%</td>
+      <td>5</td><td>3</td><td class="delta pos">+66.7%</td>
+      <td>₹11,890</td><td>₹22,840</td><td class="delta neg">−47.9%</td>
+    </tr><tr>
+      <td>04:00</td>
+      <td>287</td><td>335</td><td class="delta neg">−14.3%</td>
+      <td>36</td><td>65</td><td class="delta neg">−44.6%</td>
+      <td>12</td><td>11</td><td class="delta pos">+9.1%</td>
+      <td>5</td><td>3</td><td class="delta pos">+66.7%</td>
+      <td>₹11,890</td><td>₹22,840</td><td class="delta neg">−47.9%</td>
+    </tr><tr>
+      <td>05:00</td>
+      <td>312</td><td>356</td><td class="delta neg">−12.4%</td>
+      <td>37</td><td>66</td><td class="delta neg">−43.9%</td>
+      <td>12</td><td>12</td><td class="delta pos">+0.0%</td>
+      <td>5</td><td>3</td><td class="delta pos">+66.7%</td>
+      <td>₹11,890</td><td>₹22,840</td><td class="delta neg">−47.9%</td>
+    </tr><tr>
+      <td>06:00</td>
+      <td>342</td><td>403</td><td class="delta neg">−15.1%</td>
+      <td>43</td><td>67</td><td class="delta neg">−35.8%</td>
+      <td>13</td><td>12</td><td class="delta pos">+8.3%</td>
+      <td>6</td><td>3</td><td class="delta pos">+100.0%</td>
+      <td>₹19,460</td><td>₹22,840</td><td class="delta neg">−14.8%</td>
+    </tr><tr>
+      <td>07:00</td>
+      <td>432</td><td>472</td><td class="delta neg">−8.5%</td>
+      <td>67</td><td>85</td><td class="delta neg">−21.2%</td>
+      <td>19</td><td>13</td><td class="delta pos">+46.2%</td>
+      <td>9</td><td>3</td><td class="delta pos">+200.0%</td>
+      <td>₹45,798</td><td>₹22,840</td><td class="delta pos">+100.5%</td>
+    </tr><tr>
+      <td>08:00</td>
+      <td>582</td><td>590</td><td class="delta neg">−1.4%</td>
+      <td>81</td><td>93</td><td class="delta neg">−12.9%</td>
+      <td>21</td><td>13</td><td class="delta pos">+61.5%</td>
+      <td>10</td><td>3</td><td class="delta pos">+233.3%</td>
+      <td>₹46,913</td><td>₹22,840</td><td class="delta pos">+105.4%</td>
+    </tr><tr>
+      <td>09:00</td>
+      <td>628</td><td>734</td><td class="delta neg">−14.4%</td>
+      <td>85</td><td>118</td><td class="delta neg">−28.0%</td>
+      <td>21</td><td>20</td><td class="delta pos">+5.0%</td>
+      <td>10</td><td>4</td><td class="delta pos">+150.0%</td>
+      <td>₹46,913</td><td>₹24,800</td><td class="delta pos">+89.2%</td>
+    </tr></tbody>
     </table>
   </div>
-
-</div><!-- /container -->
-
-<div class="footer">
-  Data: Google Analytics 4 (account 470566311) · Shopify (indinoor.myshopify.com) via Windsor.ai &nbsp;·&nbsp;
-  Overall Orders &amp; Revenue from Shopify. Day-over-day comparison uses GA4. Revenue in ₹ INR. &nbsp;·&nbsp;
-  Auto-refreshes every hour.
 </div>
 
-<script>
-// ── Charts ─────────────────────────────────────────────────────────────────
-const labels   = ["00:00", "01:00", "02:00", "03:00", "04:00", "05:00", "06:00", "07:00", "08:00", "09:00"];
-const todaySess = [135, 70, 43, 20, 19, 25, 30, 90, 150, 46];
-const yesterSess = [169, 84, 41, 27, 14, 21, 47, 69, 118, 144];
-const todayRev  = [6745, 2695, 2450, 0, 0, 0, 7570, 26338, 1115, 0];
-const yesterRev = [4320, 1354, 0, 17166, 0, 0, 0, 0, 0, 1960];
-
-const NAVY  = '#1a1a2e';
-const GOLD  = '#e8c97a';
-const GREEN = '#1a7a4a';
-const GREY  = '#cccccc';
-
-const chartDefaults = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { labels: { font: { size: 11 }, boxWidth: 12 } } },
-  scales: {
-    x: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 } } },
-    y: { grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 } } }
-  }
-};
-
-new Chart(document.getElementById('sessChart'), {
-  type: 'bar',
-  data: {
-    labels,
-    datasets: [
-      { label: 'Today', data: todaySess, backgroundColor: NAVY + 'cc', borderRadius: 3 },
-      { label: 'Yesterday', data: yesterSess, backgroundColor: GOLD + '99', borderRadius: 3 }
-    ]
-  },
-  options: { ...chartDefaults, scales: { ...chartDefaults.scales,
-    y: { ...chartDefaults.scales.y, beginAtZero: true } } }
-});
-
-new Chart(document.getElementById('revChart'), {
-  type: 'line',
-  data: {
-    labels,
-    datasets: [
-      { label: 'Today', data: todayRev, borderColor: GREEN, backgroundColor: GREEN+'22',
-         fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: GREEN },
-      { label: 'Yesterday', data: yesterRev, borderColor: GREY, backgroundColor: 'transparent',
-         borderDash: [4,4], tension: 0.4, pointRadius: 3, pointBackgroundColor: GREY }
-    ]
-  },
-  options: { ...chartDefaults, scales: { ...chartDefaults.scales,
-    y: { ...chartDefaults.scales.y, beginAtZero: true,
-      ticks: { callback: v => '₹' + v.toLocaleString('en-IN') } } } }
-});
-
-// ── Countdown timer ─────────────────────────────────────────────────────────
-// Always compute next top-of-hour dynamically — never use a hardcoded timestamp
-function getNextHour() {
-  const d = new Date();
-  d.setMinutes(0, 0, 0);
-  d.setHours(d.getHours() + 1);
-  return d;
-}
-let nextRefresh = getNextHour();
-function tick() {
-  const diff = nextRefresh - Date.now();
-  if (diff <= 0) {
-    // Recompute instead of reloading immediately — prevents reload storms
-    nextRefresh = getNextHour();
-    location.reload();
-    return;
-  }
-  const m = Math.floor(diff/60000), s = Math.floor((diff%60000)/1000);
-  const el = document.getElementById('cd');
-  if (el) el.textContent = m + 'm ' + String(s).padStart(2,'0') + 's';
-}
-tick();
-setInterval(tick, 1000);
-</script>
+<footer>Indinoor Jewellery · Automated Hourly Funnel Dashboard · Data: GA4 + Shopify via Windsor.ai</footer>
 </body>
 </html>
