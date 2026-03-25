@@ -103,7 +103,7 @@
 <div class="header">
   <div class="header-left">
     <h1>Indinoor <span>Jewellery</span> — Live Funnel Report</h1>
-    <p>Wednesday, 25 March 2026 &nbsp;·&nbsp; Generated at 13:50 IST &nbsp;·&nbsp; Latest GA4 hour: 09:00</p>
+    <p>Wednesday, 25 March 2026 &nbsp;·&nbsp; Generated at 14:40 IST &nbsp;·&nbsp; Latest GA4 hour: 09:00</p>
   </div>
   <div class="header-right">
     <div class="badge">🟢 Live</div>
@@ -418,12 +418,25 @@ new Chart(document.getElementById('revChart'), {
 });
 
 // ── Countdown timer ─────────────────────────────────────────────────────────
-const nextRefresh = new Date("2026-03-25T14:00:00+05:30");
+// Always compute next top-of-hour dynamically — never use a hardcoded timestamp
+function getNextHour() {
+  const d = new Date();
+  d.setMinutes(0, 0, 0);
+  d.setHours(d.getHours() + 1);
+  return d;
+}
+let nextRefresh = getNextHour();
 function tick() {
   const diff = nextRefresh - Date.now();
-  if (diff <= 0) { location.reload(); return; }
+  if (diff <= 0) {
+    // Recompute instead of reloading immediately — prevents reload storms
+    nextRefresh = getNextHour();
+    location.reload();
+    return;
+  }
   const m = Math.floor(diff/60000), s = Math.floor((diff%60000)/1000);
-  document.getElementById('cd').textContent = m + 'm ' + String(s).padStart(2,'0') + 's';
+  const el = document.getElementById('cd');
+  if (el) el.textContent = m + 'm ' + String(s).padStart(2,'0') + 's';
 }
 tick();
 setInterval(tick, 1000);
